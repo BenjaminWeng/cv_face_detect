@@ -42,7 +42,7 @@ int main( int argc, const char** argv )
     cv::CommandLineParser parser(argc, argv,
         "{help h||}"
         "{cascade|haarcascades/haarcascade_frontalface_alt.xml|}"
-        "{nested-cascade|haarcascades/haarcascade_eye_tree_eyeglasses.xml|}"
+        "{nested-cascade|data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|}"
         "{scale|1|}{try-flip||}{@filename||}"
     );
     if (parser.has("help"))
@@ -218,9 +218,15 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
             circle( img, center, radius, color, 3, 8, 0 );
         }
         else
+		{
             rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
                        cvPoint(cvRound((r.x + r.width-1)*scale), cvRound((r.y + r.height-1)*scale)),
                        color, 3, 8, 0);
+			center.x = cvRound((r.x + r.width*0.5)*scale);
+            center.y = cvRound((r.y + r.height*0.5)*scale);
+		}
+		circle(img, center, 3,Scalar(255,0,0), -1);
+
         if( nestedCascade.empty() )
             continue;
         smallImgROI = smallImg( r );
