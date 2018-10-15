@@ -32,7 +32,7 @@ string nestedCascadeName;
 
 int main( int argc, const char** argv )
 {
-    VideoCapture capture;
+    VideoCapture capture("v4l2src ! video/x-raw,format=NV12,width=640,height=480 ! videoconvert ! autovideosink", CAP_ANY);
     Mat frame, image;
     string inputName;
     bool tryflip;
@@ -97,12 +97,21 @@ int main( int argc, const char** argv )
 
         for(;;)
         {
-            capture >> frame;
+	    capture >> frame;
             if( frame.empty() )
                 break;
 
             Mat frame1 = frame.clone();
             detectAndDraw( frame1, cascade, nestedCascade, scale, tryflip );
+
+	    VideoWriter outStream("output/out.mjpg", CV_FOURCC('M','J','P','G'), 5, frame.size(), true);
+	    if(outStream.isOpened())
+		outStream.write(frame1);
+	    else
+	    {
+		std::cout<<"Can't write to file!" << "\n";
+		break;
+	    }
 
             char c = (char)waitKey(10);
             if( c == 27 || c == 'q' || c == 'Q' )
